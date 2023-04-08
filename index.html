@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+async function getData() {
+  const el = document.getElementById("message")
+  const resp = await fetch("/sse")
+  const reader = resp.body.getReader();
+  let text = "";
+  while (true) {
+    const { value, done } = await reader.read()
+    const chars = new TextDecoder().decode(value);
+    text += " " + chars;
+    el.innerHTML = text;
+    if (done) {
+      break;
+    }
+  }
+}
+</script>
+<style>
+#message {
+  font-size: 24px;
+  font-weight: bold;
+}
+.cursor {
+  margin-left: 5px;
+  width: 2px;
+  background-color: gray;
+  height: 20px;
+  display: inline-block;
+}
+</style>
+<body>
+  <button onclick="getData()">报数</button>
+  <p>
+    <span id="message"></span>
+    <i class="cursor"></i>
+  </p>
+</body>
+</html>
